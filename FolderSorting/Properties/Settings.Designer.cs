@@ -25,24 +25,23 @@ namespace FolderSorting.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string mainPath {
-            get {
-                return ((string)(this["mainPath"]));
-            }
-            set {
-                this["mainPath"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         public global::System.DateTime lastSort {
             get {
                 return ((global::System.DateTime)(this["lastSort"]));
             }
             set {
                 this["lastSort"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Generic.List<FolderSorting.models.ISortingFolder> folders {
+            get {
+                return ((global::System.Collections.Generic.List<FolderSorting.models.ISortingFolder>)(this["folders"]));
+            }
+            set {
+                this["folders"] = value;
             }
         }
     }

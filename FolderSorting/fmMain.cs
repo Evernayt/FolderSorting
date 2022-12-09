@@ -12,7 +12,7 @@ namespace FolderSorting
     public partial class fmMain : Form
     {
         private bool allowShowDisplay = false;
-        string mainPath = Settings.Default.mainPath;
+        List<ISortingFolder> sortingFolders = new List<ISortingFolder>();
         DateTime currentDate = DateTime.Now;
         IMonth Month = new IMonth();
 
@@ -21,7 +21,7 @@ namespace FolderSorting
             base.SetVisibleCore(allowShowDisplay ? value : allowShowDisplay);
         }
 
-        private void showForm()
+        private void ShowForm()
         {
             allowShowDisplay = true;
             Show();
@@ -30,69 +30,110 @@ namespace FolderSorting
         public fmMain()
         {
             InitializeComponent();
+
+            Rectangle workingArea = Screen.GetWorkingArea(this);
+            Location = new Point(workingArea.Right - Width - 10, workingArea.Bottom - Height - 10);
+
             Month.initialize();
-            sort();
+            SortFolders();
         }
 
-        private bool isSortable()
+        private bool IsSortable()
         {
             DateTime lastSort = Settings.Default.lastSort;
-            tbxFolderPath.Text = mainPath;
-            setLastSort(lastSort);
-            btnSort.Enabled = false;
+            SetLastSort(lastSort);
 
-            if (mainPath == "")
+            if (Settings.Default.folders == null || Settings.Default.folders.Count == 0)
             {
-                setMessage("Не указана папка", Color.DarkRed);
+                btnSort.Enabled = false;
+                sortToolStripMenuItem.Enabled = false;
+                btnFolders.Text = "Добавить папки";
+                SetMessage("Не указаны папки для сортировки", Color.DarkRed);
+                ShowForm();
                 return false;
             }
             else
             {
-                if (Directory.Exists(mainPath))
-                {
-                    setMessage("Сортировка включена", Color.Green);
-                    btnSort.Enabled = true;
-                    return true;
-                }
-                else
-                {
-                    setMessage("Папка не существует", Color.DarkRed);
-                    return false;
-                }
+                btnSort.Enabled = true;
+                sortToolStripMenuItem.Enabled = true;
+                btnFolders.Text = "Список папок";
+                sortingFolders = Settings.Default.folders;
+                return true;
             }
         }
 
-        private void sort()
+        private void SortCheck()
         {
-            if (!isSortable())
-            {
-                showForm();
-                return;
-            };
+            int unsortedCount = 0;
+            int maxCount = sortingFolders.Count;
 
-            List<IFile> files = new IFile().getFiles(mainPath);
-            List<IDirectory> directories = new IDirectory().getDirectories(mainPath);
-
-            foreach (IFile file in files)
+            foreach (ISortingFolder sortingFolder in sortingFolders)
             {
-                moveFileToMonthFolder(file);
+                if (!sortingFolder.IsSorted)
+                {
+                    unsortedCount++;
+                }
             }
 
-            foreach (IDirectory directory in directories)
+            if (unsortedCount == maxCount)
             {
-                moveDirectoryToMonthFolder(directory);
+                SetMessage("Не удалось отсортировать папки", Color.DarkRed);
+            }
+            else if (unsortedCount > 0)
+            {
+                SetMessage($"Есть неотсортированные папки: {unsortedCount}/{maxCount}", Color.Orange);
+            }
+            else
+            {
+                SetMessage("Сортировка включена", Color.Green);
+            }
+        }
+
+        private void SortFolders()
+        {
+            if (!IsSortable()) return;
+
+            foreach (ISortingFolder sortingFolder in sortingFolders)
+            {
+                if (!Directory.Exists(sortingFolder.DirectoryPath))
+                {
+                    sortingFolder.IsSorted = false;
+                    sortingFolder.Erorr = "Папка не существует";
+                    break;
+                }
+
+                List<IFile> files = new IFile().getFiles(sortingFolder.DirectoryPath);
+                List<IDirectory> directories = new IDirectory().getDirectories(sortingFolder.DirectoryPath);
+
+                foreach (IFile file in files)
+                {
+                    MoveFileToMonthFolder(sortingFolder.DirectoryPath, file);
+                }
+
+                foreach (IDirectory directory in directories)
+                {
+                    MoveDirectoryToMonthFolder(sortingFolder.DirectoryPath, directory);
+                }
+
+                sortingFolder.IsSorted = true;
+                sortingFolder.Erorr = "";
             }
 
             DateTime lastSort = DateTime.Now;
-            setLastSort(lastSort);
+            SetLastSort(lastSort);
+
+            Settings.Default.folders = sortingFolders;
+            Settings.Default.Save();
+
+            SortCheck();
         }
 
-        private string createMonthFolder(DateTime dateTime)
+        private string CreateMonthFolder(string path, DateTime dateTime)
         {
             string monthName = dateTime.ToString("MMMM");
             int monthId = Month.getMonthId(monthName);
             string folderName = monthId + ". " + monthName + " " + dateTime.Year;
-            string folderPath = Path.Combine(mainPath, folderName);
+            string folderPath = Path.Combine(path, folderName);
 
             if (!Directory.Exists(folderPath))
             {
@@ -102,9 +143,9 @@ namespace FolderSorting
             return folderPath;
         }
 
-        private string createArchiveFolder(string year)
+        private string CreateArchiveFolder(string path, string year)
         {
-            string folderPath = Path.Combine(mainPath, "Архив " + year);
+            string folderPath = Path.Combine(path, "Архив " + year);
 
             if (!Directory.Exists(folderPath))
             {
@@ -114,9 +155,9 @@ namespace FolderSorting
             return folderPath;
         }
 
-        private void moveFileToMonthFolder(IFile file)
+        private void MoveFileToMonthFolder(string path, IFile file)
         {
-            string folderPath = createMonthFolder(file.Date);
+            string folderPath = CreateMonthFolder(path, file.Date);
             string newFilePath = Path.Combine(folderPath, file.Name);
 
             if (File.Exists(newFilePath))
@@ -127,7 +168,7 @@ namespace FolderSorting
             File.Move(file.FilePath, newFilePath);
         }
 
-        private void moveDirectoryToMonthFolder(IDirectory directory)
+        private void MoveDirectoryToMonthFolder(string path, IDirectory directory)
         {
             if (directory.Name.Contains("Архив")) return;
 
@@ -137,12 +178,12 @@ namespace FolderSorting
 
                 if (year == currentDate.Year.ToString()) return;
 
-                string archiveFolderPath = createArchiveFolder(year);
+                string archiveFolderPath = CreateArchiveFolder(path, year);
                 Directory.Move(directory.DirectoryPath, Path.Combine(archiveFolderPath, directory.Name));
                 return;
             }
 
-            string folderPath = createMonthFolder(directory.Date);
+            string folderPath = CreateMonthFolder(path, directory.Date);
             string newDirectoryPath = Path.Combine(folderPath, directory.Name);
 
             if (Directory.Exists(newDirectoryPath))
@@ -153,24 +194,7 @@ namespace FolderSorting
             Directory.Move(directory.DirectoryPath, newDirectoryPath);
         }
 
-        private void selectMainPath()
-        {
-            FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
-            {
-                DialogResult result = folderBrowserDialog.ShowDialog();
-
-                if (result == DialogResult.OK)
-                {
-                    mainPath = folderBrowserDialog.SelectedPath;
-                    Settings.Default.mainPath = folderBrowserDialog.SelectedPath;
-                    Settings.Default.Save();
-
-                    isSortable();
-                }
-            }
-        }
-
-        private void setMessage(string msg, Color color)
+        private void SetMessage(string msg, Color color)
         {
             lblMessage.Text = msg;
             lblMessage.ForeColor = color;
@@ -179,7 +203,7 @@ namespace FolderSorting
             messageToolStripMenuItem.ForeColor = color;
         }
 
-        private void setLastSort(DateTime lastSort)
+        private void SetLastSort(DateTime lastSort)
         {
             if (lastSort.Year == 0001)
             {
@@ -197,14 +221,9 @@ namespace FolderSorting
             }
         }
 
-        private void btnSelect_Click(object sender, EventArgs e)
-        {
-            selectMainPath();
-        }
-
         private void btnSort_Click(object sender, EventArgs e)
         {
-            sort();
+            SortFolders();
         }
 
         private void notifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -230,17 +249,35 @@ namespace FolderSorting
 
         private void showToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            showForm();
+            ShowForm();
         }
 
         private void sortToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            sort();
+            SortFolders();
         }
 
         private void messageToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            showForm();
+            ShowForm();
+        }
+
+        private void btnFolders_Click(object sender, EventArgs e)
+        {
+            using (fmFolders folders = new fmFolders())
+            {
+                folders.ShowDialog();
+                SortFolders();
+            }
+        }
+
+        private void foldersToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (fmFolders folders = new fmFolders())
+            {
+                folders.ShowDialog();
+                SortFolders();
+            }
         }
     }
 }

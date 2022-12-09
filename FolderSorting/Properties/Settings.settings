@@ -2,10 +2,10 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="FolderSorting.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="mainPath" Type="System.String" Scope="User">
+    <Setting Name="lastSort" Type="System.DateTime" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="lastSort" Type="System.DateTime" Scope="User">
+    <Setting Name="folders" Type="System.Collections.Generic.List&lt;FolderSorting.models.ISortingFolder&gt;" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
   </Settings>

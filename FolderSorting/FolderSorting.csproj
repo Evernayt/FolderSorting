@@ -64,6 +64,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="fmFolders.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="fmFolders.Designer.cs">
+      <DependentUpon>fmFolders.cs</DependentUpon>
+    </Compile>
     <Compile Include="fmMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -73,8 +79,12 @@
     <Compile Include="models\IDirectory.cs" />
     <Compile Include="models\IFile.cs" />
     <Compile Include="models\IMonth.cs" />
+    <Compile Include="models\ISortingFolder.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="fmFolders.resx">
+      <DependentUpon>fmFolders.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="fmMain.resx">
       <DependentUpon>fmMain.cs</DependentUpon>
     </EmbeddedResource>
@@ -86,6 +96,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.config" />
     <None Include="Properties\Settings.settings">
@@ -100,6 +111,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="folders.ico" />
+    <None Include="Resources\close.png" />
+    <None Include="Resources\warning.png" />
+    <None Include="Resources\close-hover.png" />
+    <None Include="Resources\check.png" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
