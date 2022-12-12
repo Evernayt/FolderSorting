@@ -38,10 +38,11 @@
             this.cmsNotify = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.messageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sortToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.foldersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.autorunToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.foldersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsNotify.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -116,11 +117,12 @@
             this.sortToolStripMenuItem,
             this.foldersToolStripMenuItem,
             this.showToolStripMenuItem,
+            this.autorunToolStripMenuItem,
             this.toolStripSeparator1,
             this.closeToolStripMenuItem});
             this.cmsNotify.Name = "cmsNotify";
             this.cmsNotify.ShowImageMargin = false;
-            this.cmsNotify.Size = new System.Drawing.Size(186, 151);
+            this.cmsNotify.Size = new System.Drawing.Size(186, 173);
             // 
             // messageToolStripMenuItem
             // 
@@ -139,12 +141,28 @@
             this.sortToolStripMenuItem.Text = "Отсортировать";
             this.sortToolStripMenuItem.Click += new System.EventHandler(this.sortToolStripMenuItem_Click);
             // 
+            // foldersToolStripMenuItem
+            // 
+            this.foldersToolStripMenuItem.Name = "foldersToolStripMenuItem";
+            this.foldersToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.foldersToolStripMenuItem.Text = "Список папок";
+            this.foldersToolStripMenuItem.Click += new System.EventHandler(this.foldersToolStripMenuItem_Click);
+            // 
             // showToolStripMenuItem
             // 
             this.showToolStripMenuItem.Name = "showToolStripMenuItem";
             this.showToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.showToolStripMenuItem.Text = "Показать";
             this.showToolStripMenuItem.Click += new System.EventHandler(this.showToolStripMenuItem_Click);
+            // 
+            // autorunToolStripMenuItem
+            // 
+            this.autorunToolStripMenuItem.Checked = true;
+            this.autorunToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.autorunToolStripMenuItem.Name = "autorunToolStripMenuItem";
+            this.autorunToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.autorunToolStripMenuItem.Text = "Автозапуск: Вкл";
+            this.autorunToolStripMenuItem.Click += new System.EventHandler(this.autorunToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -157,13 +175,6 @@
             this.closeToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.closeToolStripMenuItem.Text = "Выход";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
-            // 
-            // foldersToolStripMenuItem
-            // 
-            this.foldersToolStripMenuItem.Name = "foldersToolStripMenuItem";
-            this.foldersToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
-            this.foldersToolStripMenuItem.Text = "Список папок";
-            this.foldersToolStripMenuItem.Click += new System.EventHandler(this.foldersToolStripMenuItem_Click);
             // 
             // fmMain
             // 
@@ -202,6 +213,7 @@
         private System.Windows.Forms.ToolStripMenuItem sortToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem messageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem foldersToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem autorunToolStripMenuItem;
     }
 }
 

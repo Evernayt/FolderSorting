@@ -44,5 +44,29 @@ namespace FolderSorting.Properties {
                 this["folders"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool autorun {
+            get {
+                return ((bool)(this["autorun"]));
+            }
+            set {
+                this["autorun"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool firstRun {
+            get {
+                return ((bool)(this["firstRun"]));
+            }
+            set {
+                this["firstRun"] = value;
+            }
+        }
     }
 }

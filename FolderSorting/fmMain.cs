@@ -6,6 +6,8 @@ using FolderSorting.models;
 using System.Linq;
 using FolderSorting.Properties;
 using System.Drawing;
+using Microsoft.Win32;
+using System.Reflection;
 
 namespace FolderSorting
 {
@@ -36,6 +38,14 @@ namespace FolderSorting
 
             Month.initialize();
             SortFolders();
+
+            SetAutorunText(Settings.Default.autorun);
+
+            if (Settings.Default.firstRun)
+            {
+                Settings.Default.firstRun = false;
+                SetAutorun(true);
+            }
         }
 
         private bool IsSortable()
@@ -278,6 +288,60 @@ namespace FolderSorting
                 folders.ShowDialog();
                 SortFolders();
             }
+        }
+
+        private void SetAutorun(bool autorun)
+        {
+            string name = Text;
+            string path = Assembly.GetExecutingAssembly().Location;
+
+            RegistryKey registryKey = Registry.CurrentUser.CreateSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Run\\");
+
+            try
+            {
+                if (autorun)
+                {
+                    registryKey.SetValue(name, path);
+                }
+                else
+                {
+                    registryKey.DeleteValue(name);
+                }
+
+                SetAutorunText(autorun);
+                Settings.Default.autorun = autorun;
+
+                registryKey.Flush();
+                registryKey.Close();
+            }
+            catch (Exception)
+            {
+                SetAutorunText(autorun);
+                Settings.Default.autorun = false;
+            }
+            finally
+            {
+                Settings.Default.Save();
+            }
+        }
+
+        private void SetAutorunText(bool autorun)
+        {
+            const string autorunText = "Автозапуск: ";
+
+            if (autorun)
+            {
+                autorunToolStripMenuItem.Text = autorunText + "Вкл";
+            }
+            else
+            {
+                autorunToolStripMenuItem.Text = autorunText + "Выкл";
+            }
+        }
+
+        private void autorunToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SetAutorun(!Settings.Default.autorun);
         }
     }
 }

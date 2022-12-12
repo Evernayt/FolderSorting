@@ -8,5 +8,11 @@
     <Setting Name="folders" Type="System.Collections.Generic.List&lt;FolderSorting.models.ISortingFolder&gt;" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="autorun" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="firstRun" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
